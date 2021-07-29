@@ -2,6 +2,15 @@
 const button = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
+
+const getJSON = function(url, errorMessage='Something went wrong...') {
+    return fetch(url)
+    .then(response => {
+        if(!response.ok) throw new Error(`${errorMessage} ${response.status}`);
+        return response.json();
+    })
+}
+
 const renderCountryData = function(data, className='') {
     const html = `
         <article class="country ${className}">
@@ -25,18 +34,16 @@ const renderError = function(message) {
 
 
 const getCountryData = function(country) {
-    const request = fetch(`https://restcountries.eu/rest/v2/name/${country}`)
-    .then(response => response.json())
+    getJSON(`https://restcountries.eu/rest/v2/name/${country}`, 'Country not found!')
     .then(data => {
         const [jsonData] = data;
         renderCountryData(jsonData);
 
         const [neighbour] = jsonData.borders;
-        if(!neighbour) return;
+        if(!neighbour) throw new Error('No neighbour found!');
 
-        return fetch(`https://restcountries.eu/rest/v2/alpha/${neighbour}`) 
+        return getJSON(`https://restcountries.eu/rest/v2/alpha/${neighbour}`, 'Country not found!') 
     })
-    .then(response => response.json())
     .then(jsonData => renderCountryData(jsonData, className="neighbour"))
     .catch(err => {
         console.error(err);
@@ -59,6 +66,15 @@ const getCountryData = function(country) {
     // catch() handles errors that may occur from the rejection of promises, from any then() method above it.
     // finally() is always called, no matter if the promise was accepted or rejected. Use it do something that always needs to happen, something that is not
     // contingent on the result of the settled promise. (e.g. hiding loading spinners)
+
+    // We have to reject some errors from our side too. For example, the project comes rejected due to an internet connection. But, it does not get rejected
+    // if there's no country found because we have misspelt the name. We have to handle that manually.
+    // This is done through the ok property of the response object. If it is set to false, then we can know that the data did not come back in the way
+    // that we expected.
+    // throw keyword immediately terminates the function, like the return keyword.
+    // The effect of creating an throwing an error in any of the then methods is that the promise is rejected immediately. That's what we wanted, for the
+    // promise to reject when there's no country found.
+    // This error also propagates down to the catch() method.
 }
 
 button.addEventListener('click', function() {
