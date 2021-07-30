@@ -1,5 +1,7 @@
 const ages = [1998, 1995, 1989, 1985];
 const [ageOne, ageTwo, ageThree, agefour] = ages;
+const [ageZero] = ages;
+console.log(ageZero);
 
 console.log(ageOne);
 

@@ -1,4 +1,5 @@
 function isFullAge(...years) {
+    console.log(years.length);
     return years.map(el => el >= 18);
 }
 

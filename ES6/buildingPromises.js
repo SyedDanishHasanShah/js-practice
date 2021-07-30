@@ -7,7 +7,7 @@ const wait = function(seconds) {
     });
 }
 
-const lotteryPromise = new Promise(function(resolve, reject) {
+const lotteryPromise = new Promise(async function(resolve, reject) {
     console.log('Lottery draw is happening...');
     // setTimeout(() => {
     //     if (Math.random() >= 0.5) {
@@ -17,16 +17,28 @@ const lotteryPromise = new Promise(function(resolve, reject) {
     //         reject(new Error('You lost your money! :\'('));
     //     }
     // }, 2000)
-    wait(2)
-    .then(() => {
+    // wait(2)
+    // .then(() => {
+    //     if (Math.random() >= 0.5) {
+    //         resolve('You have won the lottery! :D');
+    //     }
+    //     else {
+    //         reject(new Error('You lost your money! :\'('))
+    //     }
+    // })
+    try {
+        await wait(2);
         if (Math.random() >= 0.5) {
-            resolve('You have won the lottery! :D');
+            resolve('You have won the lottery!');
         }
         else {
-            reject(new Error('You lost your money! :\'('))
+            reject(new Error('You lost your money :\'('));
         }
-    })
-})
+    }
+    catch (err) {
+        console.error(err.message);
+    }
+});
 
 // the Promise constructor takes in exactly one argument, called the executor function. As soon as the Promise constructor runs, the executor function
 // is executed immediately. As it executes the executor function, it will do so by passing in two arguments: Those arguments are the 
@@ -38,11 +50,20 @@ const lotteryPromise = new Promise(function(resolve, reject) {
 // in the catch method.
 // Thus, we can see that our promise either moves to the resolved (fulfilled) stage, or the rejected stage, using the resolve and reject functions.
 
-lotteryPromise.then(res => {
-    console.log(res); // arg passed in the resolve function
-})
-.catch(err => console.error(err.message)); // arg passed in the reject function
+// lotteryPromise.then(res => {
+//     console.log(res); // arg passed in the resolve function
+// })
+// .catch(err => console.error(err.message)); // arg passed in the reject function
 
+(async function() {
+    try {
+        const lotteryResult = await lotteryPromise;
+        console.log(lotteryResult);
+    }
+    catch(err) {
+        console.log(err.message);
+    }
+})();
 
 
 // wait(2)
